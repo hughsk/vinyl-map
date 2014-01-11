@@ -43,10 +43,12 @@ var map = require('vinyl-map')
 var gulp = require('gulp')
 
 gulp.task('minify', function() {
+  var minify = map(function(code, filename) {
+    return uglify.minify(code, { fromString: true })
+  })
+
   return gulp.src('index.js')
-    .pipe(map(function(code, filename) {
-      return uglify.minify(code, { fromString: true })
-    }))
+    .pipe(minify)
     .pipe(gulp.dest('./dist'))
 })
 ```
