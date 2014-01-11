@@ -44,15 +44,11 @@ var gulp = require('gulp')
 
 gulp.task('minify', function() {
   return gulp.src('index.js')
-    .pipe(uglify())
+    .pipe(map(function(code, filename) {
+      return uglify.minify(code, { fromString: true })
+    }))
     .pipe(gulp.dest('./dist'))
 })
-
-function uglify() {
-  return map(function(code, filename) {
-    return uglify.minify(code, { fromString: true })
-  })
-}
 ```
 
 ## API ##
