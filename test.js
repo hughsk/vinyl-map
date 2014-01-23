@@ -155,3 +155,19 @@ test('multiple stream streams in a pipeline passing streams', function(t) {
 
   stream.end(file)
 })
+
+test('thrown errors in sync mapper get emitted as errors', function(t) {
+  t.plan(2)
+
+  var stream = map(function(src) {
+    throw new Error('should be caught')
+  }).on('error', function(err) {
+    t.ok(err, 'error was caught and emitted')
+  }).on('data', function() {
+    t.fail('should not get emitted as "data"')
+  })
+
+  stream.write(new File({ contents: new Buffer(' ') }))
+  stream.write(new File({ contents: new Buffer(' ') }))
+  stream.end()
+})

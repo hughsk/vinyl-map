@@ -16,15 +16,13 @@ function map(fn) {
     if (!('contents' in file)) return this.queue(file)
 
     if (file.isNull()) return this.queue(file)
-    if (file.isBuffer()) return this.queue(map(file))
+    if (file.isBuffer()) return map(file)
 
     // should be a stream by
     // this point...
-    var self = this
-
     pending++
     file.contents.pipe(concat(function(result) {
-      self.queue(map(file, result))
+      map(file, result)
       check(--pending)
     }))
   }
@@ -35,13 +33,17 @@ function map(fn) {
       ? file.contents
       : contents
 
-    var mapped = fn(contents, file.path)
-    if (mapped === undefined) mapped = contents
+    try {
+      var mapped = fn(contents, file.path)
+    } catch(err) {
+      return stream.emit('error', err)
+    }
 
+    if (mapped === undefined) mapped = contents
     if (file.isBuffer()) file.contents = new Buffer(mapped)
     if (file.isStream()) file.contents = from([mapped])
 
-    return file
+    return stream.queue(file)
   }
 
   function flush() {
