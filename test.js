@@ -83,8 +83,8 @@ test('multiple buffers in a pipeline', function(t) {
   stream.end(file)
 })
 
-test('stream streams are passed a stream', function(t) {
-  t.plan(2)
+test('stream streams cause an error to be emitted', function(t) {
+  t.plan(3)
 
   var fileStream = fs.createReadStream(__filename)
   var contents = fs.readFileSync(__filename)
@@ -93,67 +93,12 @@ test('stream streams are passed a stream', function(t) {
   })
 
   var stream = map(function(src) {
-    t.ok(Buffer.isBuffer(src), 'Buffer.isBuffer(contents)')
-    t.equal(String(contents), String(src), 'Buffer contents are correct')
-  })
-
-  stream.once('end', function() {
-    t.end()
+    t.fail('mapped method called')
+  }).on('error', function(error) {
+    t.ok(error instanceof Error, 'error is an Error instance')
+    t.ok(error.message === 'vinyl-map: This plugin does not support streams', 'error message is correct')
+    t.pass('error emitted')
   }).end(file)
-})
-
-test('stream streams are passed a stream, modifying output stream', function(t) {
-  t.plan(5)
-
-  var fileStream = fs.createReadStream(__filename)
-  var contents = fs.readFileSync(__filename)
-  var file = new File({
-    contents: fileStream
-  })
-
-  var stream = map(function(src) {
-    t.ok(Buffer.isBuffer(src), 'Buffer.isBuffer(contents)')
-    t.equal(String(contents), String(src), 'Buffer contents are correct')
-    return String(src).toUpperCase()
-  }).on('data', function(file) {
-    t.ok(file.contents.pipe, 'output contents are a stream')
-    file.contents.pipe(concat(function(upper) {
-      t.equal(String(upper), String(contents).toUpperCase())
-    }))
-  })
-
-  stream.once('end', function() {
-    t.pass('reached "end" event')
-  }).end(file)
-})
-
-test('multiple stream streams in a pipeline passing streams', function(t) {
-  t.plan(17)
-
-  var contents = fs.readFileSync(__filename)
-  var fileStream = fs.createReadStream(__filename)
-  var file = new File({ contents: fileStream })
-
-  var stream = createStream()
-  function createStream() {
-    return map(function(src) {
-      t.ok(Buffer.isBuffer(src), 'Buffer.isBuffer(contents)')
-      t.equal(String(contents), String(src), 'Buffer contents are correct')
-    }).once('data', function(file) {
-      t.ok(file.contents.pipe, 'output contents are a stream')
-      t.ok(!Buffer.isBuffer(file), 'output contents are not a buffer')
-    })
-  }
-
-  stream
-    .pipe(createStream())
-    .pipe(createStream())
-    .pipe(createStream())
-    .once('end', function() {
-      t.pass('reached stream "end" event')
-    })
-
-  stream.end(file)
 })
 
 test('thrown errors in sync mapper get emitted as errors', function(t) {

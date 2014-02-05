@@ -16,15 +16,9 @@ function map(fn) {
     if (!('contents' in file)) return this.queue(file)
 
     if (file.isNull()) return this.queue(file)
-    if (file.isBuffer()) return map(file)
+    if (file.isStream()) return this.emit('error', new Error('vinyl-map: This plugin does not support streams'))
 
-    // should be a stream by
-    // this point...
-    pending++
-    file.contents.pipe(concat(function(result) {
-      map(file, result)
-      check(--pending)
-    }))
+    return map(file)
   }
 
   function map(file, contents) {
@@ -41,7 +35,6 @@ function map(fn) {
 
     if (mapped === undefined) mapped = contents
     if (file.isBuffer()) file.contents = new Buffer(mapped)
-    if (file.isStream()) file.contents = from([mapped])
 
     return stream.queue(file)
   }
