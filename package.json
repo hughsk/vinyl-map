@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "main": "index.js",
   "dependencies": {
-    "through": "~2.3.4",
-    "concat-stream": "~1.4.1",
+    "through2": "^0.4.1",
+    "bl": "^0.7.0",
     "new-from": "0.0.3"
   },
   "devDependencies": {

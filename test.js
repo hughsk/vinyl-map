@@ -156,8 +156,8 @@ test('multiple stream streams in a pipeline passing streams', function(t) {
   stream.end(file)
 })
 
-test('thrown errors in sync mapper get emitted as errors', function(t) {
-  t.plan(2)
+test('first thrown error in sync mapper gets emitted as an error', function(t) {
+  t.plan(1)
 
   var stream = map(function(src) {
     throw new Error('should be caught')

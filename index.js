@@ -1,6 +1,6 @@
-var concat  = require('concat-stream')
-var through = require('through')
+var through = require('through2')
 var from    = require('new-from')
+var bl      = require('bl')
 
 module.exports = map
 
@@ -9,27 +9,28 @@ function map(fn) {
   var pending = 0
   var stream
 
-  return stream = through(write, flush)
+  return stream = through.obj(write, flush)
 
-  function write(file) {
+  function write(file, _, next) {
     if (typeof file !== 'object') return
-    if (!('contents' in file)) return this.queue(file)
+    if (!('contents' in file)) return push(file, next)
 
-    if (file.isNull()) return this.queue(file)
-    if (file.isBuffer()) return map(file)
+    if (file.isNull()) return push(file, next)
+    if (file.isBuffer()) return map(file, next)
 
     // should be a stream by
     // this point...
     pending++
-    file.contents.pipe(concat(function(result) {
-      map(file, result)
+    file.contents.pipe(bl(function(err, result) {
+      if (err) return stream.emit('error', err)
+      map(file, next, result)
       check(--pending)
     }))
   }
 
-  function map(file, contents) {
+  function map(file, next, contents) {
     file = file.clone()
-    contents = arguments.length < 2
+    contents = arguments.length < 3
       ? file.contents
       : contents
 
@@ -43,7 +44,12 @@ function map(fn) {
     if (file.isBuffer()) file.contents = new Buffer(mapped)
     if (file.isStream()) file.contents = from([mapped])
 
-    return stream.queue(file)
+    push(file, next)
+  }
+
+  function push(file, next) {
+    stream.push(file)
+    next()
   }
 
   function flush() {
@@ -51,6 +57,13 @@ function map(fn) {
   }
 
   function check() {
-    if (!pending && done) stream.queue(null)
+    if (!pending && done) {
+      process.nextTick(function() {
+        stream.emit('end')
+        process.nextTick(function() {
+          stream.emit('close')
+        })
+      })
+    }
   }
 }
