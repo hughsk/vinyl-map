@@ -1,7 +1,7 @@
 {
   "name": "vinyl-map",
   "description": "Map vinyl files' contents as strings, so you can easily use existing code without needing yet another gulp plugin!",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "dependencies": {
     "through2": "^0.4.1",
