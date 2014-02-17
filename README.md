@@ -16,12 +16,14 @@ module.exports = function() {
     if (file.isNull()) return this.queue(file)
     if (file.isStream()) throw new Error('no support')
 
+    file.contents = file.contents.toString()
+
     var minified = uglify.minify(file.contents, {
       fromString: true
     })
 
     file = file.clone()
-    file.contents = new Buffer(minified)
+    file.contents = new Buffer(minified.code)
     this.queue(file)
   })
 }
@@ -44,13 +46,20 @@ var gulp = require('gulp')
 
 gulp.task('minify', function() {
   var minify = map(function(code, filename) {
-    return uglify.minify(code, { fromString: true })
+    // file contents are handed
+    // over as buffers
+    code = code.toString()
+
+    return uglify.minify(code, {
+      fromString: true
+    }).code
   })
 
-  return gulp.src('index.js')
+  return gulp.src(['./index.js'])
     .pipe(minify)
     .pipe(gulp.dest('./dist'))
 })
+
 ```
 
 ## API ##
