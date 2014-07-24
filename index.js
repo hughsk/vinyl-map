@@ -5,7 +5,7 @@ var bl      = require('bl')
 module.exports = map
 
 function map(fn) {
-  var done = false
+  var done = null
   var pending = 0
   var stream
 
@@ -52,18 +52,13 @@ function map(fn) {
     next()
   }
 
-  function flush() {
-    check(done = true)
+  function flush(cb) {
+    check(done = cb)
   }
 
   function check() {
     if (!pending && done) {
-      process.nextTick(function() {
-        stream.emit('end')
-        process.nextTick(function() {
-          stream.emit('close')
-        })
-      })
+      done();
     }
   }
 }
