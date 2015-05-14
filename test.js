@@ -171,3 +171,41 @@ test('first thrown error in sync mapper gets emitted as an error', function(t) {
   stream.write(new File({ contents: new Buffer(' ') }))
   stream.end()
 })
+
+test('async with third arg passed in', function(t) {
+  t.plan(5)
+
+  var contents = fs.readFileSync(__filename)
+  var file = new File({
+    contents: contents
+  })
+
+  var stream = map(function(src, filename, done) {
+    t.ok(Buffer.isBuffer(src), 'Buffer.isBuffer(contents)')
+    t.equal(String(contents), String(src), 'Buffer contents are correct')
+    done(null, String(src).toUpperCase())
+  }).on('data', function(file) {
+    t.ok(Buffer.isBuffer(file.contents), 'output contents are a buffer')
+    t.equal(String(file.contents), String(contents).toUpperCase())
+  })
+
+  stream.once('end', function() {
+    t.pass('Reached "end" event')
+  }).end(file)
+})
+
+test('async emits error if passed to done', function(t) {
+  t.plan(1)
+
+  var stream = map(function(src, filename, done) {
+      done(new Error('should be caught'))
+    }).on('error', function(err) {
+      t.ok(err, 'error was caught and emitted')
+    }).on('data', function() {
+      t.fail('should not get emitted as "data"')
+    })
+
+    stream.write(new File({ contents: new Buffer(' ') }))
+    stream.write(new File({ contents: new Buffer(' ') }))
+    stream.end()
+})

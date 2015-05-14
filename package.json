@@ -9,10 +9,11 @@
     "new-from": "0.0.3"
   },
   "devDependencies": {
+    "concat-stream": "^1.4.8",
+    "gulp": "~3.5.2",
     "tape": "~2.3.2",
-    "vinyl": "~0.2.1",
     "uglify-js": "~2.4.12",
-    "gulp": "~3.5.2"
+    "vinyl": "~0.2.1"
   },
   "scripts": {
     "test": "node test"
