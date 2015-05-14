@@ -28,23 +28,36 @@ function map(fn) {
     }))
   }
 
+  function postMap(file, next, contents, mapped) {
+    if (mapped === undefined) mapped = contents
+    if (file.isBuffer()) file.contents = new Buffer(mapped)
+    if (file.isStream()) file.contents = from([mapped])
+
+    push(file, next)
+  }
+
   function map(file, next, contents) {
     file = file.clone()
     contents = arguments.length < 3
       ? file.contents
       : contents
 
-    try {
-      var mapped = fn(contents, file.path)
-    } catch(err) {
-      return stream.emit('error', err)
+    if (fn.length === 3) {
+      // contents, filename, done (async)
+      fn(contents, file.path, function(err, mapped) {
+        if (err) stream.emit('error', err)
+        else postMap(file, next, contents, mapped)
+      })
+    } else {
+      // contents and/or filename (sync)
+      try {
+        var mapped = fn(contents, file.path)
+      } catch(err) {
+        return stream.emit('error', err)
+      }
+
+      postMap(file, next, contents, mapped)
     }
-
-    if (mapped === undefined) mapped = contents
-    if (file.isBuffer()) file.contents = new Buffer(mapped)
-    if (file.isStream()) file.contents = from([mapped])
-
-    push(file, next)
   }
 
   function push(file, next) {

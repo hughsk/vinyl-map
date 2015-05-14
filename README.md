@@ -64,22 +64,25 @@ gulp.task('minify', function() {
 
 ## API ##
 
-### `map(mapper(contents, filename))` ###
+### `map(mapper(contents, filename[, done]))` ###
 
 Returns a transform stream that takes vinyl files as input and spits out
 their modified copies as output.
 
-`mapper` is a function which will be called once for each file, with two
+`mapper` is a function which will be called once for each file, with three
 arguments:
 
 * `contents` is a string or [Buffer](http://nodejs.org/api/buffer.html)
 * `filename` is the value of `file.path`, which should generally be the file's
   absolute path. Might be convenient if you want to filter based on file
   extension etc.
+* `done` is an _optional_ callback function. If your `mapper` function has a third argument, it will be called asynchronously. If not, the `mapper` will be called synchronously.
 
 The `mapper` function is expected to return a modified string value for the
 updated file contents. If nothing is returned, no modifications will be made
 to the file contents, but the output file will be cloned.
+
+If you run the `mapper` function asynchronously (by using a third `done` argument), you must call it instead of returning the file contents. It is a node-style callback: `done(err, contents)`
 
 ## License ##
 
