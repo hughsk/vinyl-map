@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "through2": "^0.4.1",
-    "bl": "^0.7.0",
+    "bl": "^0.9.4",
     "new-from": "0.0.3"
   },
   "devDependencies": {
