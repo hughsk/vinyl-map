@@ -5,10 +5,11 @@
   "main": "index.js",
   "dependencies": {
     "through2": "^0.4.1",
-    "bl": "^0.7.0",
+    "bl": "^1.1.2",
     "new-from": "0.0.3"
   },
   "devDependencies": {
+    "concat-stream": "~1.5.2",
     "tape": "~2.3.2",
     "vinyl": "~0.2.1",
     "uglify-js": "~2.4.12",
