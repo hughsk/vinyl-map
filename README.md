@@ -1,4 +1,4 @@
-# vinyl-map [![Flattr this!](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=hughskennedy&url=http://github.com/hughsk/vinyl-map&title=vinyl-map&description=hughsk/vinyl-map%20on%20GitHub&language=en_GB&tags=flattr,github,javascript&category=software)[![experimental](http://hughsk.github.io/stability-badges/dist/experimental.svg)](http://github.com/hughsk/stability-badges) #
+# vinyl-map
 
 Map [vinyl](https://github.com/wearefractal/vinyl) files' contents as strings,
 so you can easily use existing code without needing yet another
@@ -33,9 +33,7 @@ Of course, sometimes that's fine too, but this might help save some complexity
 for when it's too much hassle. It also takes care of the differences between
 handling Buffer, Stream and null values for your `file.contents`.
 
-## Usage ##
-
-[![vinyl-map](https://nodei.co/npm/vinyl-map.png?mini=true)](https://nodei.co/npm/vinyl-map)
+## Usage
 
 Here's a simple example, using gulp:
 

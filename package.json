@@ -19,15 +19,18 @@
     "test": "node test"
   },
   "author": "Hugh Kennedy <hughskennedy@gmail.com> (http://hughsk.io/)",
+  "contributors": [
+    "Andrew Odri <andrew@affirmix.com> (https://affirmix.com/)"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/hughsk/vinyl-map"
+    "url": "git://github.com/affirmix/vinyl-map"
   },
   "bugs": {
-    "url": "https://github.com/hughsk/vinyl-map/issues"
+    "url": "https://github.com/affirmix/vinyl-map/issues"
   },
-  "homepage": "https://github.com/hughsk/vinyl-map",
+  "homepage": "https://github.com/affirmix/vinyl-map",
   "keywords": [
     "vinyl",
     "gulp",
